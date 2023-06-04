@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Public Proxies Checker & Scraper</title>
+    <meta charset="UTF-8" />
+    <script type="text/javascript" src="/eel.js"></script>
+    <script src="main.js"></script>
+    <style media="only screen">
+      html,
+      body {
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        box-sizing: content-box;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      html {
+        position: absolute;
+        top: 0;
+        left: 0;
+        padding: 0;
+        overflow: auto;
+      }
+
+      body {
+        padding: 0rem;
+        overflow: auto;
+      }
+
+      .outer-div {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .grid-wrapper {
+        flex: 1 1 auto;
+      }
+    </style>
+    <script src="https://www.ag-grid.com/archive/28.1.1/dev/@ag-grid-enterprise/all-modules/dist/ag-grid-enterprise.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.0/FileSaver.min.js" integrity="sha512-csNcFYJniKjJxRWRV1R7fvnXrycHP6qDR21mgz1ZP55xY5d+aHLfo9/FcGDQLfn2IfngbAHd8LdfsagcCqgTcQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="https://unpkg.com/flowbite@1.5.3/dist/flowbite.min.css" />
+  </head>
+  <style>
+    body {
+      padding: 0rem !important;
+      overflow: auto;
+    }
+
+    img {
+      display: inline-block !important;
+      vertical-align: middle !important;
+    }
+
+    .ag-font-style {
+      user-select: initial;
+      -moz-user-select: text;
+      -ms-user-select: text;
+      -webkit-user-select: text;
+    }
+
+    div.ag-root {
+      -webkit-user-select: text;
+      -moz-user-select: text;
+      -ms-user-select: text;
+      user-select: text;
+    }
+
+    .full-width-panel {
+      /* undo the white-space setting Fresh puts in */
+      white-space: normal;
+      height: 100%;
+      width: 100%;
+      border: 2px solid grey;
+      border-style: ridge;
+      box-sizing: border-box;
+      padding: 5px;
+      background-color: darkgray;
+    }
+
+    .full-width-flag {
+      float: left;
+      padding: 6px;
+    }
+
+    .full-width-summary {
+      float: left;
+      /*margin-left: 10px;*/
+      margin-right: 10px;
+    }
+
+    .full-width-panel label {
+      padding-top: 3px;
+      display: inline-block;
+      font-size: 12px;
+    }
+
+    .full-width-center {
+      overflow-y: scroll;
+      border: 1px solid grey;
+      padding: 2px;
+      height: 100%;
+      box-sizing: border-box;
+      font-family: cursive;
+      background-color: #fafafa;
+    }
+
+    .full-width-center p {
+      margin-top: 0px;
+    }
+
+    .full-width-title {
+      font-size: 20px;
+    }
+
+    .ag-theme-alpine-dark {
+      font-size: 14px;
+    }
+
+    .row-fail {
+      background-color: #aa2e25 !important;
+    }
+  </style>
+  <body class="bg-slate-900">
+    <div class="outer-div">
+      <!-- Header -->
+      <div class="w-full border-b border-slate-700 bg-black py-2.5 px-5 sm:px-4">
+        <div class="flex flex-wrap items-center justify-between text-white">
+          <div class="flex">
+            <h4 class="text-2xl font-bold">Publics</h4>
+            <button id="start" class="ml-5 disabled:opacity-50 disabled:cursor-not-allowed">
+              <svg class="h-10 w-8" aria-hidden="true" fill="white" viewBox="0 0 20 18" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6.79 5.093A.5.5 0 0 0 6 5.5v5a.5.5 0 0 0 .79.407l3.5-2.5a.5.5 0 0 0 0-.814l-3.5-2.5z" />
+                <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm15 0a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z" />
+              </svg>
+            </button>
+            <button id="stop" class="ml-3 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+              <svg class="h-9 w-9" aria-hidden="true" fill="white" viewBox="0 0 20 18" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6.25 5C5.56 5 5 5.56 5 6.25v3.5a1.25 1.25 0 1 0 2.5 0v-3.5C7.5 5.56 6.94 5 6.25 5zm3.5 0c-.69 0-1.25.56-1.25 1.25v3.5a1.25 1.25 0 1 0 2.5 0v-3.5C11 5.56 10.44 5 9.75 5z" />
+                <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm15 0a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z" />
+              </svg>
+            </button>
+            <button id="remove_filters" class="ml-3 disabled:opacity-50 disabled:cursor-not-allowed">
+              <svg xmlns="http://www.w3.org/2000/svg" width="26" height="25" fill="currentColor" class="bi bi-filter-square" viewBox="0 0 17 18">
+                <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" />
+                <path d="M6 11.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5z" />
+                <path fill-rule="evenodd" d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z" />
+              </svg>
+            </button>
+          </div>
+          <button id="nav_button">
+            <svg class="h-8 w-8" aria-hidden="true" fill="white" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <!-- Listview -->
+      <div class="grid-wrapper">
+        <div id="myGrid" class="ag-theme-alpine-dark" style="height: 94.9%"></div>
+        <div class="grid grid-cols-2">
+          <div id="status_bar" class="ag-theme-alpine-dark truncate" style=" height: 3em; background: #181d1f; font-size: 16px; padding-top: 0.5rem;  padding-left: 1rem; ">Press start to begin</div>
+          <div id="status_right" class="ag-theme-alpine-dark truncate text-right" style=" height: 3em; background: #181d1f; font-size: 16px; padding-top: 0.5rem;  padding-right: 1rem;">Proxies alive: 10 | CPU: 30% | RAM: 100MB</div>
+        </div>
+      </div>
+      <!-- Navbar -->
+      <div class="fixed transition mt-11 duration-500 ease-in-out sm:max-w-md translate-x-full overflow-x-hidden top-0 right-0" id="navbar">
+        <div class="overflow-auto h-screen w-full bg-black" id="list">
+          <ul class="gap-3 pt-3 font-semibold text-white">
+            <li class="flex items-center p-5">
+              <div class="w-full">
+                <span>Threads</span>
+                <br />
+                <span class="text-sm font-light text-slate-300">Set the concurrent execution of more than one sequential set of functions.</span>
+              </div>
+              <div>
+                <label for="threads_select" class="sr-only">Underline select</label>
+                <select id="threads_select" class="peer mx-3 block w-20 appearance-none border-0 border-b-2 border-gray-200 bg-transparent text-sm text-white focus:border-gray-200 focus:outline-none focus:ring-0 dark:border-gray-700 dark:text-gray-400">
+                  <option value="10">10</option>
+                  <option value="50">50</option>
+                  <option value="100" selected>100</option>
+                  <option value="250">250</option>
+                  <option value="500">500</option>
+                </select>
+              </div>
+            </li>
+            <li class="flex items-center p-5">
+              <div class="w-full">
+                <span>Timeouts</span>
+                <br />
+                <span class="text-sm font-light text-slate-300">Set how long to wait before quitting an idle connection.</span>
+              </div>
+              <div>
+                <label for="timeouts_select" class="sr-only">Underline select</label>
+                <select id="timeouts_select" class="peer mx-3 block w-20 appearance-none border-0 border-b-2 border-gray-200 bg-transparent text-sm text-white focus:border-gray-200 focus:outline-none focus:ring-0 dark:border-gray-700 dark:text-gray-400">
+                  <option value="5" selected>5</option>
+                  <option value="10">10</option>
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+                  <option value="120">120</option>
+                </select>
+              </div>
+            </li>
+            <li class="flex items-center p-5">
+              <div class="w-full">
+                <span>Max retries</span>
+                <br />
+                <span class="text-sm font-light text-slate-300">Set the maximum number of attempts to retransmit a failed connection.</span>
+              </div>
+              <div>
+                <label for="max_retries_select" class="sr-only">Underline select</label>
+                <select id="max_retries_select" class="peer mx-3 block w-20 appearance-none border-0 border-b-2 border-gray-200 bg-transparent text-sm text-white focus:border-gray-200 focus:outline-none focus:ring-0 dark:border-gray-700 dark:text-gray-400">
+                  <option value="0">0</option>
+                  <option value="1">1</option>
+                  <option value="3" selected>3</option>
+                  <option value="5">5</option>
+                </select>
+              </div>
+            </li>
+            <li class="flex items-center p-5">
+              <div class="w-full">
+                <span>Re-test proxies in seconds</span>
+                <br />
+                <span class="text-sm font-light text-slate-300">Set how long before test a proxy again in seconds.</span>
+              </div>
+              <div>
+                <label for="uptime_select" class="sr-only">Underline select</label>
+                <select id="uptime_select" class="peer mx-3 block w-20 appearance-none border-0 border-b-2 border-gray-200 bg-transparent text-sm text-white focus:border-gray-200 focus:outline-none focus:ring-0 dark:border-gray-700 dark:text-gray-400">
+                  <option value="30" selected>30</option>
+                  <option value="60">60</option>
+                  <option value="120">120</option>
+                </select>
+              </div>
+            </li>
+            <li class="flex items-center p-5">
+              <div class="w-full">
+                <span>Multi-port proxies</span>
+                <br />
+                <span class="text-sm font-light text-slate-300">Allow proxies with different ports on the same IP.</span>
+              </div>
+              <div>
+                <label for="multi_port_toggle" class="relative float-right mr-7 cursor-pointer">
+                  <input checked type="checkbox" value="" id="multi_port_toggle" class="peer sr-only" />
+                  <div class="peer h-6 w-11 rounded-full bg-gray-200 after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-blue-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:border-gray-600 dark:bg-gray-700 dark:peer-focus:ring-blue-800"></div>
+                </label>
+              </div>
+            </li>
+            <li class="flex items-center p-5">
+              <div class="w-full">
+                <span>Auto remove dead proxies</span>
+                <br />
+                <span class="text-sm font-light text-slate-300">Automatically remove proxies that lost connection more than 3 times.</span>
+              </div>
+              <div>
+                <label for="proxy_remove_toggle" class="relative float-right mr-7 cursor-pointer">
+                  <input checked type="checkbox" value="" id="proxy_remove_toggle" class="peer sr-only" />
+                  <div class="peer h-6 w-11 rounded-full bg-gray-200 after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-blue-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:border-gray-600 dark:bg-gray-700 dark:peer-focus:ring-blue-800"></div>
+                </label>
+              </div>
+            </li>
+            <li class="flex items-center p-5">
+              <div class="w-full">
+                <span>Proxy protocols</span>
+                <br />
+                <span class="text-sm font-light text-slate-300">Enable or disable support for proxy protocols.</span>
+              </div>
+              <div>
+                <div class="flex items-center mb-3">
+                  <input checked id="socks5_checkbox" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+                  <label for="socks5_checkbox" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Socks5</label>
+                </div>
+                <div class="flex items-center mb-3">
+                  <input checked id="socks4_checkbox" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+                  <label for="socks4_checkbox" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Socks4</label>
+                </div>
+                <div class="flex items-center">
+                  <input checked id="http_checkbox" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+                  <label for="http_checkbox" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">HTTP</label>
+                </div>
+              </div>
+            </li>
+            <li class="flex items-center p-5">
+              <div class="w-full">
+                <span>Auto export</span>
+                <br />
+                <span class="text-sm font-light text-slate-300">Automatically export your proxies to the root directory as proxy.txt.</span>
+              </div>
+              <div>
+                <label for="auto_export_toggle" class="relative float-right mr-7 cursor-pointer">
+                  <input checked type="checkbox" value="" id="auto_export_toggle" class="peer sr-only" />
+                  <div class="peer h-6 w-11 rounded-full bg-gray-200 after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-blue-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:border-gray-600 dark:bg-gray-700 dark:peer-focus:ring-blue-800"></div>
+                </label>
+              </div>
+            </li>
+            <li class="flex items-center p-5 text-center">
+              <button id="download_proxies" class="w-full justify-center bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center text-center">
+                <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                  <path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z" />
+                </svg>
+                <span>Download proxy.txt</span>
+              </button>
+            </li>
+            <li class="p-5">
+              <div class="w-full pb-5">
+                <span>Validators</span>
+                <br />
+                <span class="text-sm font-light text-slate-300">Validators are tests that proxies run against links in order to verify the success of the web-request.</span>
+              </div>
+              <div class="mx grid grid-cols-2" id="valList">
+                <span id="badge-dismiss-dark" class="hidden m-3 inline-flex rounded bg-gray-100 py-1 px-2 text-xs font-medium text-gray-800 dark:bg-gray-200 dark:text-gray-800"> Twitch.com <button id="button-badge-dismiss-dark" type="button" class="inline-flex items-center rounded-sm bg-transparent p-0.5 text-sm text-black-400 hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-300 dark:hover:text-gray-900" data-dismiss-target="#badge-dismiss-dark" aria-label="Remove">
+                    <svg aria-hidden="true" class="h-3.5 w-3.5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                      <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                  </button>
+                </span>
+              </div>
+              <div class="float-right flex p-3 mb-10">
+                <button data-modal-toggle="val_modal" type="button" class="mr-2 mb-2 rounded-full border border-gray-200 bg-white py-1.5 px-3.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"> Add </button>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <!-- Add validator modal -->
+      <div id="val_modal" tabindex="-1" aria-hidden="true" class="h-modal fixed top-0 right-0 left-0 z-50 hidden w-full overflow-y-auto overflow-x-hidden md:inset-0 md:h-full">
+        <div class="relative h-full w-full max-w-md p-4 md:h-auto">
+          <div class="relative rounded-lg bg-white shadow dark:bg-gray-700">
+            <button type="button" class="absolute top-3 right-2.5 ml-auto inline-flex items-center rounded-lg bg-transparent p-1.5 text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-800 dark:hover:text-white" data-modal-toggle="val_modal">
+              <svg aria-hidden="true" class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+              </svg>
+              <span class="sr-only">Close modal</span>
+            </button>
+            <div class="py-6 px-6 lg:px-8">
+              <h3 class="mb-4 text-xl font-medium text-gray-900 dark:text-white"> Add a validator </h3>
+              <div class="space-y-6" action="#">
+                <div>
+                  <label for="valLink" class="mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300">URL</label>
+                  <input id="valLink" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-500 dark:bg-gray-600 dark:text-white dark:placeholder-gray-400" placeholder="http://twitch.com" required />
+                </div>
+                <div>
+                  <label for="valString" class="mb-2 block text-sm font-medium text-gray-900 dark:text-gray-300">String to find</label>
+                  <input id="valString" placeholder="tx-root" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-500 dark:bg-gray-600 dark:text-white dark:placeholder-gray-400" required />
+                </div>
+                <button id="valAdd" class="w-full rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" data-modal-toggle="val_modal">Add</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="https://unpkg.com/flowbite@1.5.3/dist/flowbite.js"></script>
+  </body>
+</html>
